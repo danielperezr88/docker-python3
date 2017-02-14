@@ -62,7 +62,8 @@ RUN set -x \
 
 # Force pip2 installation and creation
 RUN set -x \
-	&& curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python2 \
+	&& curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python2
+RUN set -x \
 	&& pip2 install --no-cache-dir --upgrade pip==$PYTHON_PIP_VERSION
 
 # Install pip3, to which pip command will point
