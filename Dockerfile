@@ -61,8 +61,9 @@ RUN set -x \
 	&& ldconfig
 
 # Force pip2 installation and creation
-RUN curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python 
-RUN pip install --no-cache-dir --upgrade pip==$PYTHON_PIP_VERSION
+RUN set -x \
+	&& curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python2 \
+	&& pip2 install --no-cache-dir --upgrade pip==$PYTHON_PIP_VERSION
 
 # Install pip3, to which pip command will point
 RUN cd /usr/src/python \
