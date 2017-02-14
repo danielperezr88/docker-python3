@@ -25,7 +25,7 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 97FC712E4C024BBEA48A6
 ENV PYTHON_VERSION 3.4.3
 
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 7.0.3
+ENV PYTHON_PIP_VERSION 9.0.1
 
 # Install XZ-Utils
 RUN apt-get update && apt-get install -y xz-utils
@@ -38,13 +38,15 @@ RUN apt-get update && apt-get install -y \
 		g++ \
 		gcc \
 		make 
-		
+
+# Install some more dependencies
 RUN apt-get update && apt-get install -y \
 	libbz2-dev \
 	libssl-dev \
 	libmysqlclient-dev \
 	libsqlite3-dev
 
+# Build and install python 3
 RUN set -x \
 	&& mkdir -p /usr/src/python \
 	&& curl -SL "https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz" -o python.tar.xz \
@@ -56,7 +58,14 @@ RUN set -x \
 	&& ./configure --enable-shared --enable-unicode=ucs4 \
 	&& make -j$(nproc) \
 	&& make install \
-	&& ldconfig \
+	&& ldconfig
+
+# Force pip2 installation and creation
+RUN curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python2  \
+	&& pip2 install --no-cache-dir --upgrade pip==$PYTHON_PIP_VERSION
+
+# Install pip3, to which pip command will point
+RUN cd /usr/src/python \
 	&& curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python3 \
 	&& pip3 install --no-cache-dir --upgrade pip==$PYTHON_PIP_VERSION \
 	&& find /usr/local \
