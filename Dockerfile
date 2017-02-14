@@ -38,15 +38,13 @@ RUN apt-get update && apt-get install -y \
 		g++ \
 		gcc \
 		make 
-
-# Install some more dependencies
+		
 RUN apt-get update && apt-get install -y \
 	libbz2-dev \
 	libssl-dev \
 	libmysqlclient-dev \
 	libsqlite3-dev
 
-# Build and install python 3
 RUN set -x \
 	&& mkdir -p /usr/src/python \
 	&& curl -SL "https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz" -o python.tar.xz \
@@ -58,16 +56,7 @@ RUN set -x \
 	&& ./configure --enable-shared --enable-unicode=ucs4 \
 	&& make -j$(nproc) \
 	&& make install \
-	&& ldconfig
-
-# Force pip2 installation and creation
-RUN set -x \
-	&& curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python
-RUN set -x \
-	&& pip install --no-cache-dir --upgrade pip==$PYTHON_PIP_VERSION
-
-# Install pip3, to which pip command will point
-RUN cd /usr/src/python \
+	&& ldconfig \
 	&& curl -SL 'https://bootstrap.pypa.io/get-pip.py' | python3 \
 	&& pip3 install --no-cache-dir --upgrade pip==$PYTHON_PIP_VERSION \
 	&& find /usr/local \
